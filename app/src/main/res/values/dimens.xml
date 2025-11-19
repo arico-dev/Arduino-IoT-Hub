@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Maximum recommended button width for accessibility and responsiveness -->
+    <dimen name="max_button_width">320dp</dimen>
+    <dimen name="max_textfield_width">488dp</dimen>
+    <dimen name="touch_target_min_height">48dp</dimen>
+</resources>

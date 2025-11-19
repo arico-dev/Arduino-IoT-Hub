@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Theme Colors -->
+    <color name="primary">#0EA5E9</color>
+    <color name="primaryDark">#0284C7</color>
+    <color name="accent">#14B8A6</color>
+
+    <!-- Backgrounds -->
+    <color name="surface">#1F2937</color> <!-- Darker surface for cards -->
+    <color name="bg">#111827</color>      <!-- Main dark background -->
+
+    <!-- Text -->
+    <color name="textPrimary">#F9FAFB</color>     <!-- Light text for primary content -->
+    <color name="textSecondary">#9CA3AF</color>   <!-- Dimmer text for secondary content -->
+</resources>

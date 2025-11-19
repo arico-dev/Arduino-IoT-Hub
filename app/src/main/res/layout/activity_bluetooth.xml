@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/bg">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/connect_device"
+        style="@style/TitleText"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnScan"
+        style="@style/AppButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/scan"
+        android:layout_gravity="center"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/detected_devices_list"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/textSecondary"
+        android:gravity="center" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerDevices"
+            android:layout_width="match_parent"
+            android:layout_height="320dp" 
+            android:overScrollMode="ifContentScrolls"
+            android:contentDescription="@string/device_list_description" />
+    </FrameLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBack"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="@string/volver" />
+
+</LinearLayout>
