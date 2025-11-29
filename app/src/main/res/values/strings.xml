@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Arduino-IoT-Hub</string>
-    <string name="login_error">Credenciales inválidas</string>
+    <string name="login_error">Email o contraseña inválidos</string>
     <string name="scanning">Escaneando dispositivos...</string>
     <string name="scan_complete">Escaneo completado</string>
     <string name="led_on">LED: ENCENDIDO</string>
@@ -47,4 +47,17 @@
     <string name="no_devices_found">No se encontraron dispositivos</string>
     <string name="bluetooth_permissions_required">Se requieren permisos de Bluetooth</string>
     <string name="bluetooth_required_for_scan">Se necesita activar Bluetooth para escanear</string>
+    <string name="email">Email</string>
+    <string name="register">Registrarse</string>
+    <string name="no_account_register">¿No tienes cuenta? Regístrate</string>
+    <string name="already_have_account_login">¿Ya tienes cuenta? Inicia Sesión</string>
+    <string name="registration_error">Error en el registro. Verifica el email e inténtalo de nuevo.</string>
+    <string name="registration_success">Registro exitoso</string>
+    <string name="all_fields_required">Todos los campos son requeridos</string>
+    <string name="confirm_password">Confirmar Contraseña</string>
+    <string name="passwords_do_not_match">Las contraseñas no coinciden</string>
+    <string name="password_too_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="load_history">Cargar Historial</string>
+    <string name="loading_history">[Firestore] Cargando últimos eventos...</string>
+    <string name="no_history_found">No hay eventos en el historial.</string>
 </resources>
