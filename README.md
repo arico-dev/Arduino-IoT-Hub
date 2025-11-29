@@ -1,17 +1,19 @@
 # Arduino IoT Hub
 
-Aplicación Android nativa para controlar y monitorizar una placa Arduino a través de una conexión Bluetooth. Permite interactuar con componentes electrónicos como un LED y un sensor de luz (LDR) desde un panel de control intuitivo y moderno.
+Aplicación Android nativa para controlar y monitorizar una placa Arduino a través de una conexión Bluetooth. Cuenta con un sistema de autenticación de usuarios y un registro de eventos en la nube utilizando Firebase.
 
 ## Características Principales
 
-- **Conexión Bluetooth:** Escaneo y conexión robusta con dispositivos Bluetooth, optimizada para módulos de puerto serie como el HC-05.
+- **Autenticación de Usuarios con Firebase:** Sistema completo de registro e inicio de sesión de usuarios con `Firebase Authentication`, incluyendo validaciones de seguridad.
+- **Conexión Bluetooth Robusta:** Escaneo y conexión con dispositivos Bluetooth, optimizada para módulos de puerto serie como el HC-05 mediante una arquitectura de hilos segura.
 - **Panel de Control Centralizado:** Una interfaz de usuario clara para interactuar con todos los componentes del hardware.
-- **Control de LED:** Encendido y apagado remoto de un LED mediante un interruptor (Switch) de Material Design.
+- **Control de LED:** Encendido y apagado remoto de un LED mediante un interruptor (`Switch`) de Material Design.
 - **Monitor de Sensor LDR:** Visualización en tiempo real del valor de un sensor de luz (LDR) con una barra de progreso animada.
+- **Registro de Eventos en la Nube:** Guardado de eventos significativos (conexiones, acciones del usuario, cambios de estado del sensor) en `Cloud Firestore`.
+- **Historial de Eventos:** Funcionalidad para cargar y visualizar el historial de eventos directamente en la consola de la aplicación.
 - **Consola Serial:** Envío de comandos de texto personalizados y recepción de mensajes desde el Arduino para depuración y control avanzado.
-- **Diseño Moderno:** Interfaz de usuario pulida siguiendo las guías de Material Design 3, incluyendo tarjetas (`CardView`), campos de texto `TextInputLayout` y botones estilizados.
-- **Soporte para Tema Oscuro:** La interfaz se adapta automáticamente al tema claro u oscuro del dispositivo, manteniendo la legibilidad.
-- **Flujo de Usuario Completo:** Incluye una pantalla de inicio (`Splash`), login de usuario, pantalla de descripción del proyecto y navegación coherente.
+- **Diseño Moderno:** Interfaz de usuario pulida siguiendo las guías de Material Design 3, incluyendo tarjetas (`CardView`), campos de texto `TextInputLayout` y soporte para tema oscuro.
+- **Flujo de Usuario Completo:** Incluye pantalla de inicio (`Splash`), registro/login, pantalla de descripción del proyecto y navegación coherente.
 
 ## Tecnologías Utilizadas
 
@@ -22,6 +24,8 @@ Aplicación Android nativa para controlar y monitorizar una placa Arduino a trav
     - Componentes de Material Design 3
     - View Binding para la interacción con las vistas
     - AndroidX AppCompat y Activity
+    - Firebase Authentication
+    - Cloud Firestore
 
 ### Hardware
 - **Placa:** Compatible con Arduino (Uno, Nano, etc.)
@@ -75,12 +79,11 @@ void loop() {
 
     String mensaje = "";
 
-    if (ldrStatus <= 300) {
-        digitalWrite(ledPin, LOW); // Apaga el LED si está oscuro
-        mensaje = "Luz: " + String(ldrStatus) + " | " + String(porcentajeLuz) + "% -> Oscuro, LED APAGADO";
+    // Envía el estado del LED y del LDR
+    if (digitalRead(ledPin) == HIGH) {
+        mensaje = "Luz: " + String(ldrStatus) + " | " + String(porcentajeLuz) + "% -> LED ENCENDIDO";
     } else {
-        digitalWrite(ledPin, HIGH); // Enciende el LED si hay luz
-        mensaje = "Luz: " + String(ldrStatus) + " | " + String(porcentajeLuz) + "% -> Claro, LED ENCENDIDO";
+        mensaje = "Luz: " + String(ldrStatus) + " | " + String(porcentajeLuz) + "% -> LED APAGADO";
     }
 
     btSerial.println(mensaje);
@@ -100,12 +103,10 @@ void loop() {
         // ---- Acciones basadas en el comando ----
         if (comando == "LED_ON") {
             digitalWrite(ledPin, HIGH);
-            btSerial.println("LED ENCENDIDO");
         }
 
         if (comando == "LED_OFF") {
             digitalWrite(ledPin, LOW);
-            btSerial.println("LED APAGADO");
         }
 
         if (comando == "LDR?") {
@@ -121,20 +122,19 @@ void loop() {
 ## Instalación y Uso
 
 ### Hardware
-1.  **Montar el circuito:**
-    - Conectar el pin del LED al pin digital `13` del Arduino.
-    - Conectar el sensor LDR al pin analógico `A0`.
-    - Conectar el módulo Bluetooth: pin `TX` del módulo al pin `2` del Arduino (RX) y pin `RX` del módulo al pin `3` del Arduino (TX).
+1.  **Montar el circuito:** Conectar los componentes (LED, LDR, módulo Bluetooth) a los pines correspondientes del Arduino como se especifica en el código.
 2.  **Cargar el Código:** Abrir el IDE de Arduino, pegar el código `.ino` de arriba y cargarlo a la placa.
 
 ### Software
-1.  Clonar o descargar este repositorio.
-2.  Abrir el proyecto con la última versión de Android Studio.
-3.  Construir y ejecutar la aplicación en un dispositivo Android físico.
-4.  En la pantalla de login, usar las credenciales:
-    - **Usuario:** `user`
-    - **Contraseña:** `1234`
-5.  Navegar a la pantalla de conexión, escanear y seleccionar el módulo Bluetooth de tu Arduino.
+1.  **Configurar Firebase:**
+    - Crear un nuevo proyecto en la [Consola de Firebase](https://console.firebase.google.com/).
+    - Dentro del proyecto, habilitar **Authentication** (con el proveedor de Email/Contraseña) y **Cloud Firestore** (iniciándolo en modo de prueba o producción).
+    - Registrar una nueva app de Android en el proyecto, usando `com.example.arduino_iot_hub` como nombre de paquete.
+2.  **Clonar el Repositorio:** `git clone https://github.com/arico-dev/Arduino-IoT-Hub.git`
+3.  **Añadir Configuración de Firebase:** Descargar el archivo `google-services.json` desde tu proyecto de Firebase y colocarlo en el directorio `app/` de este proyecto.
+4.  **Abrir en Android Studio:** Abrir el proyecto clonado con la última versión de Android Studio.
+5.  **Construir y Ejecutar:** Construir y ejecutar la aplicación en un dispositivo Android físico.
+6.  **Crear una Cuenta:** Usar la pantalla de registro para crear un nuevo usuario y luego iniciar sesión.
 
 ## Autores
 
