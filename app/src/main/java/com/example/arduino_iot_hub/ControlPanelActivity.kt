@@ -44,9 +44,8 @@ class ControlPanelActivity : AppCompatActivity() {
                     val message = msg.obj as? String
                     if (message != null) {
                         binding.tvConsole.append(message + "\n")
-                        if (message.contains("Luz:")) {
-                            handleArduinoData(message)
-                        }
+                        // Process every message received from Arduino
+                        handleArduinoData(message)
                     }
                 }
             }
@@ -84,6 +83,7 @@ class ControlPanelActivity : AppCompatActivity() {
         })
 
         binding.switchLed.setOnCheckedChangeListener { _, isChecked ->
+            // This listener is only for user actions. The UI update is handled by handleArduinoData.
             val command = if (isChecked) "LED_ON" else "LED_OFF"
             bluetoothConnection?.write(command)
             saveEventToFirestore("ACCION_LED", mapOf("estado" to if(isChecked) "ENCENDIDO" else "APAGADO"))
@@ -111,21 +111,40 @@ class ControlPanelActivity : AppCompatActivity() {
     }
 
     private fun handleArduinoData(message: String) {
-        try {
-            val ldrValue = message.substringAfter("Luz: ").substringBefore(" |").trim().toInt()
-            binding.tvLdrValue.text = ldrValue.toString()
-            binding.ldrProgressIndicator.progress = ldrValue
+        // Parse LDR value if present
+        if (message.contains("Luz:")) {
+            try {
+                val ldrString = message.substringAfter("Luz: ").substringBefore(" ->").trim()
+                val ldrValue = ldrString.toInt()
+                binding.tvLdrValue.text = ldrValue.toString()
+                binding.ldrProgressIndicator.progress = ldrValue
 
-            val newLdrState = if (message.contains("OSCURO")) "Oscuro" else "Claro"
-            if (newLdrState != lastLdrState) {
-                lastLdrState = newLdrState
-                saveEventToFirestore("CAMBIO_DE_LUZ", mapOf("nuevo_estado" to newLdrState, "valor_ldr" to ldrValue))
+                // Check for LDR state change for Firestore
+                val newLdrState = when {
+                    message.contains("Auto: OSCURO") -> "Oscuro"
+                    message.contains("Auto: HAY LUZ") -> "Claro"
+                    else -> null // Not an automatic state message
+                }
+
+                if (newLdrState != null && newLdrState != lastLdrState) {
+                    lastLdrState = newLdrState
+                    saveEventToFirestore("CAMBIO_DE_LUZ", mapOf("nuevo_estado" to newLdrState, "valor_ldr" to ldrValue))
+                }
+            } catch (e: Exception) {
+                Log.e("ControlPanelActivity", "Error parsing LDR value from: $message", e)
             }
+        }
 
-            ledOn = message.contains("LED ENCENDIDO")
+        // Parse LED State from any relevant message
+        val newLedState = when {
+            message.contains("(LED ON)") || message.contains("MANUAL: LED ENCENDIDO") -> true
+            message.contains("(LED OFF)") || message.contains("MANUAL: LED APAGADO") -> false
+            else -> null // This message doesn't inform the LED state
+        }
+
+        if (newLedState != null) {
+            ledOn = newLedState
             updateLedUi()
-        } catch (e: Exception) {
-            Log.e("ControlPanelActivity", "Error parsing LDR value from: $message", e)
         }
     }
 
@@ -184,8 +203,16 @@ class ControlPanelActivity : AppCompatActivity() {
 
 
     private fun updateLedUi() {
+        // Remove listener before updating to prevent feedback loop
+        binding.switchLed.setOnCheckedChangeListener(null)
         binding.switchLed.isChecked = ledOn
         binding.viewLedIndicator.isActivated = ledOn
+        // Restore listener
+        binding.switchLed.setOnCheckedChangeListener { _, isChecked ->
+            val command = if (isChecked) "LED_ON" else "LED_OFF"
+            bluetoothConnection?.write(command)
+            saveEventToFirestore("ACCION_LED", mapOf("estado" to if(isChecked) "ENCENDIDO" else "APAGADO"))
+        }
     }
 
     override fun onDestroy() {
